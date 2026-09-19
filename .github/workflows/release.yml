@@ -53,6 +53,8 @@ jobs:
       - name: Upload
         env:
           GH_TOKEN: ${{ github.token }}
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
         run: |
           set -eu
           gh release upload "${GITHUB_REF_NAME}" \
