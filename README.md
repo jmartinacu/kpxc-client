@@ -9,12 +9,8 @@ The client connects to a Unix domain socket: `$KPXC_SOCKET`, or
 `$XDG_RUNTIME_DIR/kpxc_server` by default.
 
 - **Native Linux:** the GUI exposes that socket directly; no extra setup.
-- **WSL2:** the GUI runs on Windows, so the socket must be bridged from
-  its named pipe
-  (`\\.\pipe\org.keepassxc.KeePassXC.BrowserServer_<user>`)
-  via socat + npiperelay - see
-  [docs/wsl2-keepassxc-setup.md](docs/wsl2-keepassxc-setup.md) for the
-  full bridge setup and troubleshooting.
+- **Other setups** (e.g. WSL2): bridge or expose the GUI's socket
+  yourself and point `$KPXC_SOCKET` at it.
 
 ## Commands
 

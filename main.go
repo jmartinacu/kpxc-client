@@ -13,9 +13,7 @@ import (
 const usage = `kpxc-client - query the KeePassXC database unlocked in the GUI
 
 The GUI must have Browser Integration enabled and the database unlocked.
-Socket: $KPXC_SOCKET or $XDG_RUNTIME_DIR/kpxc_server (on WSL2 this socket
-is bridged to the Windows GUI's named pipe; on native Linux the GUI's own
-socket is used directly).
+Socket: $KPXC_SOCKET or $XDG_RUNTIME_DIR/kpxc_server.
 
 Usage:
   kpxc-client configure                 Associate with the current database

@@ -2,10 +2,7 @@
 // protocol (https://github.com/keepassxreboot/keepassxc-browser/blob/develop/keepassxc-protocol.md).
 //
 // It speaks newline-delimited JSON over a Unix domain socket (the same socket
-// the Linux KeePassXC GUI exposes at $XDG_RUNTIME_DIR/kpxc_server). On WSL2
-// that socket is bridged to the Windows named pipe \\.\pipe\org.keepassxc.KeePassXC.BrowserServer_<user> via
-// socat + npiperelay, which lets the tool query the database already
-// unlocked in the Windows GUI.
+// the Linux KeePassXC GUI exposes at $XDG_RUNTIME_DIR/kpxc_server).
 package main
 
 import (
