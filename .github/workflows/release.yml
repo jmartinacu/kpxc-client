@@ -19,7 +19,7 @@ jobs:
         run: |
           gh release create "${GITHUB_REF_NAME}" \
             --title "kpxc-client ${GITHUB_REF_NAME}" \
-            --generate-from-commit \
+            --generate-notes \
             --verify-tag
 
   upload-assets:
