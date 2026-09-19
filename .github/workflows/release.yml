@@ -1,0 +1,50 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: arm64
+          - goos: linux
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          go build -trimpath -ldflags "-s -w" \
+            -o "kpxc-client_${GOOS}_${GOARCH}" .
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in 1 2 3 4 5; do
+            gh release upload "${GITHUB_REF_NAME}" \
+              "kpxc-client_${GOOS}_${GOARCH}" --clobber \
+              && break
+            sleep $((i * 10))
+          done
+          gh release view "${GITHUB_REF_NAME}" >/dev/null \
+            || gh release create "${GITHUB_REF_NAME}" \
+              --title "kpxc-client ${GITHUB_REF_NAME}" \
+              --generate-from-commit
