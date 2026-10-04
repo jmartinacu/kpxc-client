@@ -111,9 +111,19 @@ func (e *ProtocolError) Error() string {
 
 // well-known error codes
 const (
-	errDatabaseNotOpened = 1
-	errNoLoginsFound     = 15
+	errDatabaseNotOpened        = 1
+	errIncorrectAction          = 12
+	errNoLoginsFound            = 15
+	errAccessToAllEntriesDenied = 19
 )
+
+// accessAllDenied reports whether KeePassXC rejected a
+// get-database-entries request because the "Return all entries"
+// setting is disabled in Browser Integration options.
+func accessAllDenied(err error) bool {
+	var pe *ProtocolError
+	return errors.As(err, &pe) && pe.Code == errAccessToAllEntriesDenied
+}
 
 // ErrEmptyResponse is returned when KeePassXC sends a reply with no
 // message payload. Some actions (e.g. lock-database) do this on success.

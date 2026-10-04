@@ -32,7 +32,7 @@ Custom attributes (Attributes tab) must be named with a "KPH: " prefix in
 KeePassXC or they are not exposed to the protocol.
 `
 
-// entry is one login returned by get-logins / get-all-logins.
+// entry is one login returned by get-logins / get-database-entries.
 type entry map[string]any
 
 func (e entry) str(k string) string {
@@ -249,6 +249,16 @@ func cmdList(socket string, args []string) error {
 	return withAssociated(socket, func(c *Client, id *identity) error {
 		entries, err := getLogins(c, id, *url, *all)
 		if err != nil {
+			if accessAllDenied(err) {
+				return fmt.Errorf("KeePassXC denied access to all entries: " +
+					"enable Settings > Browser Integration > " +
+					"\"Return all entries\" and retry")
+			}
+			var pe *ProtocolError
+			if errors.As(err, &pe) && pe.Code == errIncorrectAction {
+				return fmt.Errorf("this KeePassXC version does not support " +
+					"listing all entries (needs 2.8+); use list --url instead")
+			}
 			return err
 		}
 		if *asJSON {
@@ -267,7 +277,10 @@ func getLogins(c *Client, id *identity, url string, all bool) ([]entry, error) {
 		"keys": []map[string]string{{"id": id.id, "key": id.idPubB64}},
 	}
 	if all {
-		action = "get-all-logins"
+		// KeePassXC removed "get-all-logins"; the replacement is
+		// "get-database-entries", which needs the "Return all entries"
+		// setting enabled in the GUI's Browser Integration options.
+		action = "get-database-entries"
 	} else {
 		inner["url"] = url
 		inner["submitUrl"] = url
