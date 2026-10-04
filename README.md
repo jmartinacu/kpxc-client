@@ -60,8 +60,9 @@ git config --global credential.helper '!f() { kpxc-client git-credential "$@"; }
 
 - Custom attributes without the `KPH: ` prefix are never sent by
   KeePassXC (see above).
-- `list --all` (`get-all-logins`) is not implemented by the KeePassXC
-  2.7.x server; `list --url` and `get --url` work.
+- `list --all` needs KeePassXC 2.8+ and the "Return all entries"
+  setting enabled in Settings > Browser Integration; on 2.7.x only
+  `list --url` and `get --url` work.
 - Attachments cannot be read via the browser protocol; use `keepassxc-cli
 attachment-export` against the `.kdbx` file for those.
 
