@@ -391,6 +391,15 @@ func gitCredential(socket, op string) error {
 	if err := sc.Err(); err != nil {
 		return err
 	}
+	// Git sends "protocol"+"host" (+ optional "path"), not "url".
+	if in["url"] == "" {
+		if in["protocol"] != "" && in["host"] != "" {
+			in["url"] = in["protocol"] + "://" + in["host"]
+			if in["path"] != "" {
+				in["url"] += "/" + strings.TrimPrefix(in["path"], "/")
+			}
+		}
+	}
 	switch op {
 	case "get":
 		if in["url"] == "" {
