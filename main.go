@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -132,6 +133,12 @@ func main() {
 	case "lock":
 		err = withClient(path, func(c *Client) error {
 			_, err := c.request("lock-database", nil)
+			// KeePassXC confirms a successful lock with a
+			// "Database not opened" reply or an empty reply;
+			// both mean the lock succeeded.
+			if IsDatabaseLocked(err) || errors.Is(err, ErrEmptyResponse) {
+				return nil
+			}
 			return err
 		})
 	default:

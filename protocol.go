@@ -115,6 +115,10 @@ const (
 	errNoLoginsFound     = 15
 )
 
+// ErrEmptyResponse is returned when KeePassXC sends a reply with no
+// message payload. Some actions (e.g. lock-database) do this on success.
+var ErrEmptyResponse = errors.New("empty response from KeePassXC")
+
 // IsDatabaseLocked reports whether the error means the GUI is locked.
 func IsDatabaseLocked(err error) bool {
 	var pe *ProtocolError
@@ -258,7 +262,10 @@ func (c *Client) request(action string, inner map[string]any) (json.RawMessage, 
 		if resp.Error != "" || resp.ErrorCode != nil {
 			return nil, protocolErr(resp.ErrorCode, resp.Error)
 		}
-		return nil, fmt.Errorf("empty response for action %q", action)
+		// Some actions (e.g. lock-database) reply with an empty
+		// message and no success flag on success; surface a typed
+		// error so callers can tell this case apart from a failure.
+		return nil, ErrEmptyResponse
 	}
 	if resp.Nonce != "" {
 		// server nonce must equal request nonce + 1
