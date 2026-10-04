@@ -377,6 +377,12 @@ func gitCredential(socket, op string) error {
 	if op == "erase" {
 		return nil
 	}
+	// A credential helper receives its input over stdin (key=value
+	// lines terminated by an empty line). When run manually with a
+	// terminal on stdin, say so instead of blocking silently.
+	if fi, err := os.Stdin.Stat(); err == nil && fi.Mode()&os.ModeCharDevice != 0 {
+		fmt.Fprintln(os.Stderr, "git-credential: reading key=value pairs from stdin; end with an empty line (Ctrl-D)")
+	}
 	in := map[string]string{}
 	sc := bufio.NewScanner(os.Stdin)
 	for sc.Scan() {
